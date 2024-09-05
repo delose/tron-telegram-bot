@@ -8,4 +8,8 @@ node_modules/
 # General
 .env
 
+# ABI
+abi.json
 
+# user wallet (auto-generated)
+user_wallets.json
