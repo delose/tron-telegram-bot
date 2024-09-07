@@ -401,14 +401,12 @@ async def button(update: Update, context: CallbackContext) -> None:
     private_key = user_wallet['private_key']
 
     address = user_wallet['address']
-
-
+        
+    _, amount, contract_address = query.data.split('_')
 
     if query.data.startswith('explorer_'):
 
         # Extract the contract address and generate Tronscan URL
-
-        contract_address = query.data.split('_')[1]
 
         explorer_url = f"https://tronscan.org/#/contract/{contract_address}"
 
@@ -433,10 +431,6 @@ async def button(update: Update, context: CallbackContext) -> None:
         else:
 
             await query.edit_message_text(text=f"Attempting to buy {amount} TRX worth of tokens for {token_address}...")
-
-            retrieved_ca = context.user_data.get('contract_address')
-
-            contract_address = retrieved_ca  # The actual contract address for purchases
 
             success = await purchase_token(contract_address, int(amount), private_key, address)
 
@@ -497,7 +491,7 @@ async def button(update: Update, context: CallbackContext) -> None:
             await query.edit_message_text(text=f"Your Wallet Address: {address}\nYour Private Key: {private_key}")
 
         else:
-            
+
             await query.edit_message_text(text="Wallet not found. Please start the bot with /start.")
 
     elif query.data == 'settings':
@@ -568,87 +562,50 @@ async def handle_custom_trx_amount(update: Update, context: CallbackContext) -> 
 # Function to buy tokens using TronPy with the user's wallet details
 
 async def purchase_token(contract_address: str, trx_amount: int, private_key: str, my_address: str) -> bool:
+            try:
+                client = Tron(provider=HTTPProvider(api_key=TRONGRID_API_KEY))
 
-    try:
+                # Check if the wallet has enough TRX balance
+                balance = get_trx_balance(my_address)
+                if balance < trx_amount:
+                    print("Insufficient TRX balance.")
+                    return False
 
-        client = Tron(provider=HTTPProvider(api_key=TRONGRID_API_KEY))
-
-
-
-        # Check if the wallet has enough TRX balance
-
-        balance = get_trx_balance(my_address)
-
-        if balance < trx_amount:
-
-            print("Insufficient TRX balance.")
-
-            return False
-
-
-        # Load the ABI from the JSON file
-
-        with open('../abi.json', 'r') as file:
-            abi = json.load(file)
-
-
-        # Load the contract using ABI
-
-        contract = client.get_contract(contract_address, abi=abi)
-
+                # Load the ABI from the JSON file
+                with open('abi.json', 'r') as file:
+                    abi = json.load(file)
         
+                # Load the contract using ABI
+                print(f"Contract address: {contract_address}")
+                contract = client.get_contract(contract_address)
+                contract.abi = abi
 
-        print(f"Contract loaded: {contract}")
+                print(f"Contract loaded: {contract}")
+                print(f"Contract functions: {contract.functions}")
 
-        print(f"Contract functions: {contract.functions}")
-
-
-
-        # Build and send the transaction
-
-        txn = (
-
-            contract.functions.purchaseToken(contract_address, trx_amount)
-
-            .with_owner(my_address)
-
-            .fee_limit(100_000_000)
-
-            .call_value(trx_amount * 1_000_000)  # Convert TRX to sun (1 TRX = 1,000,000 sun)
-
-            .build()
-
-            .sign(PrivateKey(bytes.fromhex(private_key)))
-
-            .broadcast()
-
-        )
-
+                # Build and send the transaction
+                txn = (
+                    contract.functions.purchaseToken(contract_address, trx_amount)
+                    .with_owner(my_address)
+                    .fee_limit(100_000_000)
+                    # .value(trx_amount * 1_000_000)  # Convert TRX to sun (1 TRX = 1,000,000 sun)
+                    .build()
+                    .sign(PrivateKey(bytes.fromhex(private_key)))
+                    .broadcast()
+                )
         
+                print(f"Transaction sent: {txn}")
 
-        print(f"Transaction sent: {txn}")
+                # Wait for the transaction to be confirmed
+                result = txn.wait()
+                print(f"Transaction result: {result}")
 
-
-
-        # Wait for the transaction to be confirmed
-
-        result = txn.wait()
-
-        print(f"Transaction result: {result}")
-
-
-
-        return result['receipt']['result']
-
-    except Exception as e:
-
-        print(f"Error purchasing token: {e}")
-
-        import traceback
-
-        traceback.print_exc()
-
-        return False
+                return result['receipt']['result']
+            except Exception as e:
+                print(f"Error purchasing token: {e}")
+                import traceback
+                traceback.print_exc()
+                return False
 
 
 
