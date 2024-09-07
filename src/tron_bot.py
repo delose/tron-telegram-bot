@@ -448,8 +448,6 @@ async def button(update: Update, context: CallbackContext) -> None:
 
                 await query.edit_message_text(text=f"Failed to buy {amount} TRX worth of tokens for {token_address}.")
 
-    
-
     elif query.data == 'cancel':
 
         await query.edit_message_text(text="Operation canceled.")
@@ -460,12 +458,55 @@ async def button(update: Update, context: CallbackContext) -> None:
 
         await query.edit_message_text(text=f"Refreshed! Current TRX Balance: {trx_balance} TRX")
 
-    elif query.data == 'sunio':
+    elif query.data.startswith('sunio_'):
 
-        await query.edit_message_text(text="Opening Sun.io...")
+        sunio_url = "https://sun.io/"
 
-        # Add logic to open Sun.io here
+        await query.edit_message_text(text=f"View Sun.io: {sunio_url}")
 
+    elif query.data == 'sell_manage':
+        
+        await query.edit_message_text(text="Selling and managing tokens...")
+
+    elif query.data == 'community':
+        
+        community_url = "https://forum.trondao.org"
+    
+        await query.edit_message_text(text=f"View our TRON community: {community_url}")
+
+    elif query.data == 'refer_friends':
+        
+        referral_url = "https://invitation.codes/tron"
+    
+        await query.edit_message_text(text=f"Refer your friends: {referral_url}")
+
+    elif query.data == 'backup_bots':
+        
+        await query.edit_message_text(text="Backing up bots...")
+
+    elif query.data == 'wallet':
+
+        user_wallet = user_wallets.get(str(query.from_user.id))
+
+        if user_wallet:
+
+            address = user_wallet['address']
+
+            private_key = user_wallet['private_key']
+
+            await query.edit_message_text(text=f"Your Wallet Address: {address}\nYour Private Key: {private_key}")
+
+        else:
+            
+            await query.edit_message_text(text="Wallet not found. Please start the bot with /start.")
+
+    elif query.data == 'settings':
+        
+        await query.edit_message_text(text="Opening the settings...")
+
+    elif query.data == 'pin':
+        
+        await query.edit_message_text(text="Pinning the bot...")
 
 
 # Function to handle user input for custom TRX amount
