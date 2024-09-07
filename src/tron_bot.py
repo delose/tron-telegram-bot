@@ -14,12 +14,13 @@ import json
 
 import os
 
-
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 
 # Set your TronGrid API key
 
-TRONGRID_API_KEY: Final = os.getenv('TRONGRID_API_KEY')
-TELEGRAM_TOKEN: Final = os.getenv('TELEGRAM_TOKEN')
+TRONGRID_API_KEY = os.getenv('TRONGRID_API_KEY')
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 # A simple dictionary to store user wallet data
 
@@ -261,6 +262,8 @@ async def display_token_info(update: Update, context: CallbackContext, token_inf
 
     user_id = str(update.message.from_user.id)
 
+    # Error fetching TRX balance: account not found on-chain
+    
     address = user_wallets[user_id]['address']
 
     trx_balance = get_trx_balance(address)
