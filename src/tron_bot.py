@@ -434,7 +434,9 @@ async def button(update: Update, context: CallbackContext) -> None:
 
             await query.edit_message_text(text=f"Attempting to buy {amount} TRX worth of tokens for {token_address}...")
 
-            contract_address = "TQHj5QZA8PaHBcAGkYdi8QxdtuNabuVx5r"  # The actual contract address for purchases
+            retrieved_ca = context.user_data.get('contract_address')
+
+            contract_address = retrieved_ca  # The actual contract address for purchases
 
             success = await purchase_token(contract_address, int(amount), private_key, address)
 
@@ -545,7 +547,7 @@ async def purchase_token(contract_address: str, trx_amount: int, private_key: st
 
         # Load the ABI from the JSON file
 
-        with open('abi.json', 'r') as file:
+        with open('../abi.json', 'r') as file:
             abi = json.load(file)
 
 

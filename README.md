@@ -32,12 +32,16 @@ Before running the bot, ensure you have the following installed:
 
    Create a `.env` file in the project root directory. This file should include your Telegram bot token and TronGrid API key, formatted as follows:
 
-   - TELEGRAM_TOKEN=your_telegram_bot_token
-   - TRONGRID_API_KEY=your_trongrid_api_key
+   ```
+   TELEGRAM_TOKEN=your_telegram_bot_token
+   TRONGRID_API_KEY=your_trongrid_api_key
+   ```
 
    Replace `your_telegram_bot_token` with your actual Telegram bot token and `your_trongrid_api_key` with your TronGrid API key.
 
-4. Run the Bot:
+## How to Run the Bot
+
+   - Run the Bot:
 
    Start the bot by running the appropriate command in your terminal or command prompt to execute the main Python script. The bot will begin polling for messages and interactions on Telegram.
 
@@ -64,6 +68,12 @@ Follow these steps to run the Python script for the TronBot:
     ```
     python src/tron_bot.py
     ```
+3. **📋 Click the button below to copy the commands:**
+   ```
+   venv\Scripts\activate (Windows)
+   source venv/bin/activate (macOS/Linux)
+   python src/tron_bot.py
+   ```
 
 ## Usage
 
