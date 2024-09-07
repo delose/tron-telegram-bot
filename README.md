@@ -146,4 +146,12 @@ Feel free to submit issues, fork the repository, and send pull requests. Contrib
    +-------------------------------------+
    ```
 
-   
+## Directory Structure
+   ```
+   tron-telegram-bot/
+   │
+   ├── src/tron_bot.py              # Main script for running the bot
+   ├── samples/welcome.py              # Sample script for handling Telegram messages
+   ├── .env                # Environment variables
+   └── abi.json            # ABI file
+   ```
